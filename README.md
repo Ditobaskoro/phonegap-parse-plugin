@@ -19,8 +19,8 @@ Installation
 Pick one of these two commands:
 
 ```
-phonegap local plugin add https://github.com/ghmeier/phonegap-parse-plugin
-cordova plugin add https://github.com/ghmeier/phonegap-parse-plugin
+phonegap local plugin add https://github.com/Ditobaskoro/phonegap-parse-plugin
+cordova plugin add https://github.com/Ditobaskoro/phonegap-parse-plugin
 ```
 
 Initial Setup
@@ -66,6 +66,11 @@ Usage
 <script type="text/javascript>
 	parsePlugin.initialize(appId, clientKey, function() {
 		alert('success');
+	}, function(e) {
+		alert('error');
+	});
+	parsePlugin.setUserId('userId', function() {
+		alert('OK');
 	}, function(e) {
 		alert('error');
 	});
