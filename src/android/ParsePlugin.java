@@ -15,6 +15,7 @@ import android.util.Log;
 
 public class ParsePlugin extends CordovaPlugin {
     public static final String ACTION_INITIALIZE = "initialize";
+    public static final String ACTION_SET_USER_ID = "setUserId";
     public static final String ACTION_GET_INSTALLATION_ID = "getInstallationId";
     public static final String ACTION_GET_INSTALLATION_OBJECT_ID = "getInstallationObjectId";
     public static final String ACTION_GET_SUBSCRIPTIONS = "getSubscriptions";
@@ -26,6 +27,10 @@ public class ParsePlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals(ACTION_INITIALIZE)) {
             this.initialize(callbackContext, args);
+            return true;
+        }
+        if (action.equals(ACTION_SET_USER_ID)) {
+            this.setUserId(args.getString(0), callbackContext);
             return true;
         }
         if (action.equals(ACTION_GET_INSTALLATION_ID)) {
@@ -49,10 +54,10 @@ public class ParsePlugin extends CordovaPlugin {
             this.unsubscribe(args.getString(0), callbackContext);
             return true;
         }
-	if (action.equals(ACTION_PUSH)){
-	    this.pushOnChannel(callbackContext,args);
-	    return true;	
-	}
+    if (action.equals(ACTION_PUSH)){
+        this.pushOnChannel(callbackContext,args);
+        return true;    
+    }
         return false;
     }
 
@@ -71,6 +76,17 @@ public class ParsePlugin extends CordovaPlugin {
             }
         });
     }
+    
+    private void setUserId(final String userId, final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                installation.put("user_id",userId);
+                installation.saveInBackground();
+                callbackContext.success();
+            }
+        });
+    }
 
     private void getInstallationId(final CallbackContext callbackContext) {
         cordova.getThreadPool().execute(new Runnable() {
@@ -84,16 +100,16 @@ public class ParsePlugin extends CordovaPlugin {
     private void pushOnChannel(final CallbackContext callbackContext,final JSONArray args){
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
-	String channel = args.getString(0);
-	String message = args.getString(1);
+    String channel = args.getString(0);
+    String message = args.getString(1);
                 ParsePush push = new ParsePush();
-		push.setChannel(channel);
+        push.setChannel(channel);
                 push.setMessage(message);
-		push.sendInBackground();
-		
-	        callbackContext.success();
+        push.sendInBackground();
+        
+            callbackContext.success();
             }
-        });	
+        }); 
     }
 
     private void getInstallationObjectId(final CallbackContext callbackContext) {

@@ -15,7 +15,33 @@
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
-
+- (void)setUserId:(CDVInvokedUrlCommand *)command
+{
+    // Not sure if this is necessary
+    /*if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+     UIUserNotificationSettings *settings =
+     [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert |
+     UIUserNotificationTypeBadge |
+     UIUserNotificationTypeSound
+     categories:nil];
+     [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+     [[UIApplication sharedApplication] registerForRemoteNotifications];
+     }
+     else {
+     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+     UIRemoteNotificationTypeBadge |
+     UIRemoteNotificationTypeAlert |
+     UIRemoteNotificationTypeSound];
+     }
+     */
+    //CDVPluginResult* pluginResult = nil;
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    NSString *userId = [command.arguments objectAtIndex:0];
+    [currentInstallation setObject:userId forKey:@"user_id"];
+    [currentInstallation saveInBackground];
+    //pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    //[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
 - (void)getInstallationId:(CDVInvokedUrlCommand*) command
 {
     [self.commandDelegate runInBackground:^{

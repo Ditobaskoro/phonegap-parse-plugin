@@ -9,6 +9,16 @@ var parsePlugin = {
         );
     },
 
+    setUserId: function(userId, successCallback, errorCallback) {
+        cordova.exec(
+            successCallback,
+            errorCallback,
+            'ParsePlugin',
+            'setUserId',
+            [ userId ]
+        );
+    },
+
     getInstallationId: function(successCallback, errorCallback) {
         cordova.exec(
             successCallback,

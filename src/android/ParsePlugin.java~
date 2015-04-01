@@ -15,6 +15,7 @@ import android.util.Log;
 
 public class ParsePlugin extends CordovaPlugin {
     public static final String ACTION_INITIALIZE = "initialize";
+    public static final String ACTION_SET_USER_ID = "setUserId";
     public static final String ACTION_GET_INSTALLATION_ID = "getInstallationId";
     public static final String ACTION_GET_INSTALLATION_OBJECT_ID = "getInstallationObjectId";
     public static final String ACTION_GET_SUBSCRIPTIONS = "getSubscriptions";
@@ -29,6 +30,11 @@ Log.e("gifasent","woah dog "+action);
             this.initialize(callbackContext, args);
             return true;
         }
+        if (action.equals(ACTION_SET_USER_ID)) {
+            this.setUserId(args.getString(0), callbackContext);
+            return true;
+        }
+        
         if (action.equals(ACTION_GET_INSTALLATION_ID)) {
             this.getInstallationId(callbackContext);
             return true;
@@ -50,10 +56,10 @@ Log.e("gifasent","woah dog "+action);
             this.unsubscribe(args.getString(0), callbackContext);
             return true;
         }
-	if (action.equals(ACTION_PUSH)){
-	    this.pushOnChannel(callbackContext,args);
-	    return true;	
-	}
+    if (action.equals(ACTION_PUSH)){
+        this.pushOnChannel(callbackContext,args);
+        return true;    
+    }
         return false;
     }
 
@@ -72,6 +78,17 @@ Log.e("gifasent","woah dog "+action);
             }
         });
     }
+    
+    private void setUserId(final String userId, final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                installation.put("user_id",userId);
+                installation.saveInBackground();
+                callbackContext.success();
+            }
+        });
+    }
 
     private void getInstallationId(final CallbackContext callbackContext) {
         cordova.getThreadPool().execute(new Runnable() {
@@ -85,16 +102,16 @@ Log.e("gifasent","woah dog "+action);
     private void pushOnChannel(final CallbackContext callbackContext,final JSONArray args){
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
-	String channel = args.getString(0);
-	String message = args.getString(1);
+    String channel = args.getString(0);
+    String message = args.getString(1);
                 ParsePush push = new ParsePush();
-		push.setChannel(channel);
+        push.setChannel(channel);
                 push.setMessage(message);
-		push.sendInBackground();
-		
-	        callbackContext.success();
+        push.sendInBackground();
+        
+            callbackContext.success();
             }
-        });	
+        }); 
     }
 
     private void getInstallationObjectId(final CallbackContext callbackContext) {
